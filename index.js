@@ -46,7 +46,6 @@ app.post("/user/create/", (req, res) => {
     disabled: true,
     name: req.body.name,
     userID: id,
-    city: req.body.city,
     phone: req.body.phone,
   };
 
@@ -59,7 +58,6 @@ app.post("/user/create/", (req, res) => {
       displayName: req.body.name,
       disabled: false,
       uid: id,
-      name: req.body.name,
       phoneNumber: req.body.phone,
     })
     .then(function (userRecord) {
@@ -127,7 +125,7 @@ app.post("/user/all/bookings", (req, res) => {
       res.json(result);
     })
     .catch((error) => {
-      res.send(error);
+      res.send("error");
     });
 });
 
@@ -171,14 +169,48 @@ app.get("/admin/add/trip", (req, res) => {
     id: id,
     title: "Visit Kalangala",
     createdOn: date,
-    photoURL: "https://randomuser.me/api/portraits/men/36.jpg",
+    description:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    photoURL:
+      "https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png",
     venue: { lat: 1000, long: 2000, location: "Kalangala District" },
     scheduled: "20/02/2023",
+    price: 100000,
   };
   var ref = db.ref("trips/" + id);
   ref.set(details);
   res.json(details);
   console.log(details);
+});
+
+//flutterwave payment
+
+app.get("/payment", (req, res) => {
+  const FLW_PUBLIC_KEY = "FLWPUBK_TEST-9b20b51419bb0e23f960a0d675a78c75-X";
+  const FLW_SECRET_KEY = "FLWSECK_TEST-42d83c2dec42a31c028c19d47e5551c9-X";
+  const Flutterwave = require("flutterwave-node-v3");
+  const flw = new Flutterwave(FLW_PUBLIC_KEY, FLW_SECRET_KEY);
+  const createBill = async () => {
+    try {
+      const payload = {
+        country: "UGX",
+        customer: "+256702206985",
+        amount: 1000,
+        recurrence: "ONCE",
+        type: "AIRTIME",
+        reference: "930rwrwr0049404444",
+      };
+
+      const response = await flw.Bills.create_bill(payload);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  createBill();
+
+  res.send("payment in process");
 });
 
 const port = 10000;
