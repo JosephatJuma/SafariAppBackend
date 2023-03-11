@@ -109,9 +109,7 @@ app.get("/user/login", (req, res) => {
 //get all the trips added
 app.get("/all/trips/", (req, res) => {
   db.ref("/trips")
-    .once("value", function (snapshot) {
-      const result = snapshot.val();
-    })
+    .once("value", function (snapshot) {})
     .then((result) => {
       console.log(result);
       res.json(result.val());
@@ -133,7 +131,7 @@ app.post("/user/all/bookings", (req, res) => {
       res.json(result);
     })
     .catch((error) => {
-      res.send("error");
+      res.send(error);
     });
 });
 
