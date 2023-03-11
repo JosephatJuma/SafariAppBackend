@@ -12,11 +12,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
+const mysql = require("mysql");
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
+//mysql connection
+const databaseConnection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "travel_db",
+});
 
 //Functions
 const crypto = require("crypto");
@@ -61,7 +69,7 @@ app.post("/user/create/", (req, res) => {
       phoneNumber: req.body.phone,
     })
     .then(function (userRecord) {
-      // See the UserRecord reference doc for the contents of userRecord.
+      // sned data to the dbs
       console.log("Successfully created new user:", userRecord.uid);
       var ref = db.ref("users/" + user.userID);
       ref.set(user);
@@ -162,20 +170,20 @@ app.post("/user/booking/", (req, res) => {
 
 //ADMINSTARTIVE
 //add a new trip
-app.get("/admin/add/trip", (req, res) => {
+app.post("/admin/add/trip", (req, res) => {
   const id = "T" + generateServiceId();
   const date = getCurrentDateAndTime();
   const details = {
     id: id,
-    title: "Visit Kalangala",
+    title: req.body.title,
     createdOn: date,
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    description: req.body.description,
     photoURL:
       "https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png",
-    venue: { lat: 1000, long: 2000, location: "Kalangala District" },
-    scheduled: "20/02/2023",
-    price: 100000,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    price: req.body.amount,
+    destination: req.body.destination,
   };
   var ref = db.ref("trips/" + id);
   ref.set(details);
@@ -193,7 +201,7 @@ app.get("/payment", (req, res) => {
   const createBill = async () => {
     try {
       const payload = {
-        country: "UGX",
+        country: "Nigeria",
         customer: "+256702206985",
         amount: 1000,
         recurrence: "ONCE",
@@ -202,6 +210,13 @@ app.get("/payment", (req, res) => {
       };
 
       const response = await flw.Bills.create_bill(payload);
+      databaseConnection.query(
+        "SELECT * FROM users",
+        function (error, results) {
+          if (error) throw error;
+          res.send(results);
+        }
+      );
       console.log(response);
     } catch (error) {
       console.log(error);
@@ -209,8 +224,6 @@ app.get("/payment", (req, res) => {
   };
 
   createBill();
-
-  res.send("payment in process");
 });
 
 const port = 10000;
