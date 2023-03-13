@@ -137,7 +137,6 @@ app.post("/user/all/bookings", (req, res) => {
 
 //book a trip
 app.post("/user/booking/", (req, res) => {
-  console.log(req.body);
   const tripID = "T45757";
   const userID = req.body.userID;
   const cost = 120000;
@@ -169,6 +168,7 @@ app.post("/user/booking/", (req, res) => {
 //ADMINSTARTIVE
 //add a new trip
 app.post("/admin/add/trip", (req, res) => {
+  console.log(req.body);
   const id = "T" + generateServiceId();
   const date = getCurrentDateAndTime();
   const details = {
@@ -185,7 +185,7 @@ app.post("/admin/add/trip", (req, res) => {
   };
   var ref = db.ref("trips/" + id);
   ref.set(details);
-  res.json(details);
+  res.json({ message: "Successfully added trip" });
   console.log(details);
 });
 
