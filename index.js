@@ -168,7 +168,20 @@ app.post("/user/booking/", (req, res) => {
 //ADMINSTARTIVE
 //add a new trip
 app.post("/admin/add/trip", (req, res) => {
-  console.log(req.body);
+  // const sql =
+  //   "INSERT INTO trips(id, firstName, lastName,Phone, email,password) VALUES (?,?,?,?,?,?)";
+  // databaseConnection.query(
+  //   sql,
+  //   [id, fname, lname, phone, email, password],
+  //   (err, result) => {
+  //     if (err) throw error;
+  //     console.log(result);
+  //     if (result) {
+  //       const message = "Successfully resigstered, Now login";
+  //       res.send(message);
+  //     }
+  //   }
+  // );
   const id = "T" + generateServiceId();
   const date = getCurrentDateAndTime();
   const details = {
