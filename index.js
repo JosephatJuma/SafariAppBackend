@@ -131,28 +131,40 @@ app.post("/user/all/bookings", (req, res) => {
       res.json(result);
     })
     .catch((error) => {
-      res.send(error);
+      res.send(error.message);
+      console.log(error.message);
+    });
+});
+
+app.post("/search", (req, res) => {
+  const searchTerm = req.body.searchTerm;
+  console.log(searchTerm);
+  db.ref("trips")
+    .orderByChild("trips")
+    .equalTo(searchTerm)
+    .once("value")
+    .then((snapshot) => {
+      const items = snapshot.val();
+      console.log(items);
+    })
+    .catch((error) => {
+      console.error(error);
     });
 });
 
 //book a trip
 app.post("/user/booking/", (req, res) => {
-  const tripID = "T45757";
   const userID = req.body.userID;
   const cost = 120000;
   amountPaid = 100000;
   const date = getCurrentDateAndTime();
   const id = "B" + generateServiceId();
   const booking = {
+    bookingDate: date,
     id: id,
     userID: userID,
-    tripID: req.body.id,
-    dateBooked: date,
-    cost: cost, //req.body.amount,
-    amountPaid: amountPaid, //req.body.amountPaid,
-    cleared: false, //req.body.cleared,
-    balance: cost - amountPaid,
-    dueDate: "20/02/2023", // req.body.dueDate,
+    trip: req.body.item,
+    confirmed: req.body.confirmed,
   };
   var ref = db.ref("bookings/" + userID + "/" + id);
   ref
@@ -209,32 +221,29 @@ app.get("/payment", (req, res) => {
   const FLW_SECRET_KEY = "FLWSECK_TEST-42d83c2dec42a31c028c19d47e5551c9-X";
   const Flutterwave = require("flutterwave-node-v3");
   const flw = new Flutterwave(FLW_PUBLIC_KEY, FLW_SECRET_KEY);
-  const createBill = async () => {
+  const ug_mobile_money = async () => {
     try {
       const payload = {
-        country: "Nigeria",
-        customer: "+256702206985",
-        amount: 1000,
-        recurrence: "ONCE",
-        type: "AIRTIME",
-        reference: "930rwrwr0049404444",
+        tx_ref: "MC-1585230950508",
+        amount: "15000",
+        email: "jumajosephat61@gmail.com",
+        phone_number: "+256702206985",
+        currency: "UGX",
+        fullname: "Juma Josephat",
+        redirect_url: "https://rave-webhook.herokuapp.com/receivepayment",
+        voucher: "128373",
+        network: "MTN",
       };
 
-      const response = await flw.Bills.create_bill(payload);
-      databaseConnection.query(
-        "SELECT * FROM users",
-        function (error, results) {
-          if (error) throw error;
-          res.send(results);
-        }
-      );
-      console.log(response);
+      const response = await flw.MobileMoney.uganda(payload);
+      res.send(response.meta.authorization.redirect);
+      res.end();
     } catch (error) {
       console.log(error);
+      res.send(error);
     }
   };
-
-  createBill();
+  ug_mobile_money();
 });
 
 const port = 10000;
