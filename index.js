@@ -85,22 +85,17 @@ app.get("/user/login", (req, res) => {
   const email = "jumajosephat61@gmail.com";
   const password = "Jose@2000";
   const auth = admin.auth();
-
   auth
     .getUserByEmail(email)
     .then((userRecord) => {
       const userID = userRecord.uid;
-      //console.log(userRecord);
       return auth.createSessionCookie(userID, {
         expiresIn: 2000000,
       });
     })
-    .then((sessionCookie) => {
-      // Sign in user with the session cookie.
-    })
+    .then((sessionCookie) => {}) // Sign in user with the session cookie.
     .catch((error) => {
       console.log("Error signing in: ", error.message);
-
       res.send(error);
     });
 });
@@ -155,16 +150,15 @@ app.post("/search", (req, res) => {
 //book a trip
 app.post("/user/booking/", (req, res) => {
   const userID = req.body.userID;
-  const cost = 120000;
-  amountPaid = 100000;
   const date = getCurrentDateAndTime();
   const id = "B" + generateServiceId();
   const booking = {
     bookingDate: date,
     id: id,
     userID: userID,
-    trip: req.body.item,
     confirmed: req.body.confirmed,
+    trip: req.body.item,
+    tripID: req.body.item.id,
   };
   var ref = db.ref("bookings/" + userID + "/" + id);
   ref
@@ -173,7 +167,7 @@ app.post("/user/booking/", (req, res) => {
       res.json(booking);
     })
     .catch((error) => {
-      res.send(error);
+      res.send(error.message);
     });
 });
 
