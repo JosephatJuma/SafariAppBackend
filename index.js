@@ -11,21 +11,12 @@ var db = admin.database();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
-const mysql = require("mysql");
 const app = express();
 const host = "0000/0";
 
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
-//mysql connection
-const databaseConnection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "travel_db",
-});
 
 //Functions
 const crypto = require("crypto");
@@ -44,6 +35,9 @@ function getCurrentDateAndTime() {
 }
 
 //AUTHENTICATION MODULES
+app.get("/", (req, res) => {
+  res.send("Up and runnibg");
+});
 app.post("/user/create/", (req, res) => {
   const id = generateUserId();
   const user = {
@@ -262,9 +256,9 @@ app.get("/payment", (req, res) => {
   ug_mobile_money();
 });
 
-const port = 10000;
+const port = 3000;
 
 //launch the server
-app.listen(port, host, () => {
+app.listen(port, () => {
   console.log("Running on port " + port);
 });
