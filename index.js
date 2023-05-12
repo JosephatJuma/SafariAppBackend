@@ -14,6 +14,7 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const mysql = require("mysql");
 const app = express();
+const host = "0000/0";
 
 app.use(express.json());
 app.use(cors());
@@ -113,6 +114,30 @@ app.get("/all/trips/", (req, res) => {
       res.send(error);
     });
 });
+//get all bookings for admin user
+app.get("/all/bookings/", (req, res) => {
+  db.ref("/bookings/" + "4b9dcea643c661370d33")
+    .once("value", function (snapshot) {})
+    .then((result) => {
+      console.log(result);
+      res.json(result.val());
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+});
+//get all users for admin user
+app.get("/all/users/", (req, res) => {
+  db.ref("/users/")
+    .once("value", function (snapshot) {})
+    .then((result) => {
+      console.log(result);
+      res.json(result.val());
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+});
 
 //get bookings for a particular user
 app.post("/user/all/bookings", (req, res) => {
@@ -147,7 +172,7 @@ app.post("/search", (req, res) => {
     });
 });
 
-//book a trip
+//book a trip and save to db
 app.post("/user/booking/", (req, res) => {
   const userID = req.body.userID;
   const date = getCurrentDateAndTime();
@@ -241,7 +266,8 @@ app.get("/payment", (req, res) => {
 });
 
 const port = 10000;
+
 //launch the server
-app.listen(port, () => {
+app.listen(port, host, () => {
   console.log("Running on port " + port);
 });
