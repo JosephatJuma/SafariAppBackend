@@ -259,6 +259,6 @@ app.get("/payment", (req, res) => {
 const port = 3000;
 
 //launch the server
-app.listen(port,"0000/0", () => {
+app.listen(port, "0.0.0.0", () => {
   console.log("Running on port " + port);
 });
