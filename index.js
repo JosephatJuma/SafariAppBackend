@@ -145,14 +145,12 @@ app.post("/user/all/bookings", (req, res) => {
   db.ref("/bookings/" + uid)
     .once("value", function (snapshot) {
       const result = snapshot.val();
-      console.log(result);
     })
     .then((result) => {
       res.json(result);
     })
     .catch((error) => {
       res.send(error.message);
-      console.log(error.message);
     });
 });
 
@@ -230,7 +228,6 @@ app.post("/admin/add/trip", (req, res) => {
   var ref = db.ref("trips/" + id);
   ref.set(details);
   res.json({ message: "Successfully added trip" });
-  console.log(details);
 });
 
 //flutterwave payment
@@ -258,7 +255,7 @@ app.get("/payment", (req, res) => {
       res.send(response.meta.authorization.redirect);
       res.end();
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       res.send(error);
     }
   };
